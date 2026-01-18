@@ -1,15 +1,14 @@
-// proto/user.proto
 syntax = "proto3";
 
-package user;
+package users.v1;
 
-option go_package = "github.com/steviepreston/grpc-proto-example/proto-buffers";
+option go_package = "github.com/steviepreston/grpc-proto-example/proto-buffers/users/v1;usersv1";
 
 service UserService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
-  rpc StreamUsers(StreamUsersRequest) returns (stream User); // server streaming
+  rpc StreamUsers(StreamUsersRequest) returns (stream StreamUsersResponse);
 }
 
 message User {
@@ -47,3 +46,8 @@ message ListUsersResponse {
 }
 
 message StreamUsersRequest {}
+
+message StreamUsersResponse {
+  User user = 1;
+}
+

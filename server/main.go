@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "github.com/steviepreston/grpc-proto-example/proto-buffers"
+	pb "github.com/steviepreston/grpc-proto-example/proto-buffers/users/v1"
 )
 
 type userServer struct {
@@ -81,7 +81,7 @@ func (s *userServer) StreamUsers(req *pb.StreamUsersRequest, stream pb.UserServi
 	defer s.mu.RUnlock()
 
 	for _, user := range s.users {
-		if err := stream.Send(user); err != nil {
+		if err := stream.Send(&pb.StreamUsersResponse{User: user}); err != nil {
 			return err
 		}
 		time.Sleep(100 * time.Millisecond) // simulate delay

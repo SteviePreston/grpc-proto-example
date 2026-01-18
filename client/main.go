@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pb "github.com/steviepreston/grpc-proto-example/proto-buffers"
+	pb "github.com/steviepreston/grpc-proto-example/proto-buffers/users/v1"
 )
 
 func main() {
@@ -59,18 +59,6 @@ func main() {
 		if err != nil {
 			log.Fatalf("stream error: %v", err)
 		}
-		log.Printf("Streamed user: %s", user.Name)
+		log.Printf("Streamed user: %s", user.User.Name)
 	}
 }
-```
-
-## 5. go.mod
-```
-module github.com/yourname/grpc-example
-
-go 1.22
-
-require (
-    google.golang.org/grpc v1.62.0
-    google.golang.org/protobuf v1.32.0
-)
