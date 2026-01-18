@@ -1,0 +1,77 @@
+# mise.toml
+
+[env]
+GOBIN = "{{config_root}}/bin"
+PATH = "{{config_root}}/bin:{{env.PATH}}"
+
+[tools]
+go = "1.25"
+buf = "latest"
+protoc = "28.3"
+grpcurl = "latest"
+
+[tasks.install-tools]
+description = "Install Go protobuf plugins"
+run = """
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+"""
+
+[tasks.generate]
+description = "Generate Go code from proto files"
+depends = ["install-tools"]
+run = "buf generate"
+
+[tasks.lint-proto]
+description = "Lint proto files"
+run = "buf lint"
+
+[tasks.fmt-proto]
+description = "Format proto files"
+run = "buf format -w"
+
+[tasks.server]
+description = "Run the gRPC server"
+depends = ["generate"]
+run = "go run server/main.go"
+
+[tasks.client]
+description = "Run the gRPC client"
+run = "go run client/main.go"
+
+[tasks.build]
+description = "Build server and client binaries"
+depends = ["generate"]
+run = """
+go build -o bin/server ./server
+go build -o bin/client ./client
+"""
+
+[tasks.test]
+description = "Run tests"
+run = "go test -v ./..."
+
+[tasks.tidy]
+description = "Tidy go modules"
+run = "go mod tidy"
+
+[tasks.clean]
+description = "Remove generated files and binaries"
+run = """
+rm -rf bin/
+rm -rf pb/*.go
+"""
+
+[tasks.grpcurl-list]
+description = "List available gRPC services (server must be running)"
+run = "grpcurl -plaintext localhost:50051 list"
+
+[tasks.grpcurl-describe]
+description = "Describe the UserService"
+run = "grpcurl -plaintext localhost:50051 describe user.UserService"
+
+[tasks.dev]
+description = "Run server with auto-reload on changes"
+run = """
+find . -name '*.go' -o -name '*.proto' | entr -r mise run server
+"""
